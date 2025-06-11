@@ -1,0 +1,136 @@
+version: "3.3"
+services:
+  
+  nginx:
+    image: nginx
+    container_name: nginx
+    restart: always
+    privileged: true
+    ports: 
+      - "80:80"
+      - "443:443"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      - TZ=Asia/Shanghai
+      - MY_ENV=pre
+      - CONTAINER_HOST_IP=172.22.193.45
+    networks:
+      - normal
+    volumes: 
+      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./data/nginx/logs:/var/log/nginx
+      - ./data/nginx/conf/conf.d:/etc/nginx/conf.d
+      - /Users/sss/php/www:/www
+      - /Users/sss/php/www/games/iframe_game/gs2c:/Users/sss/php/www/games/backend/src/App/Game/public/gs2c
+
+
+  php:
+    build: ./data/dockerfile/php
+    container_name: php
+    restart: always
+    privileged: true
+    environment:
+      - TZ=Asia/Shanghai
+      - MY_ENV=pre
+      - CONTAINER_HOST_IP=172.22.193.45
+    networks:
+      - normal
+    volumes:
+      - /Users/sss/php/www:/www
+      - ./data/php/log:/var/log/php-fpm
+      - ./data/php/conf.d/php.ini:/usr/local/etc/php/php.ini
+      - ./data/php/php-fpm.d/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
+      - /Users/sss/php/www/games/iframe_game/gs2c:/Users/sss/php/www/games/backend/src/App/Game/public/gs2c
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    privileged: true
+    networks:
+      - normal
+    environment:
+      - MYSQL_ROOT_PASSWORD=835556264Aa!
+      - MYSQL_DATABASE=zhaojian
+      - MYSQL_USER=zhaojian
+      - MYSQL_PASSWORD=zhaojian!
+    command: [
+      'mysqld',
+      '--default-authentication-plugin=mysql_native_password',  # 关键配置
+      '--innodb-buffer-pool-size=80M',
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_unicode_ci',
+      '--default-time-zone=+8:00',
+      '--max_connections=1000'
+    ] 
+    volumes:
+      # 挂挂载配置文件
+      - ./data/mysql/conf:/etc/mysql/conf.d
+      # 挂载日志
+      - ./data/mysql/logs:/logs
+      # 挂载数据
+      - ./data/mysql/data:/var/lib/mysql
+      - ./mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql  # 初始化脚本
+    ports:
+      - "3307:3306" #本地的3307映射到容器的3306端口
+  # mysql:
+  #   image: mysql/mysql-server:5.7.34
+  #   container_name: mysql
+  #   restart: always
+  #   privileged: true
+  #   ports:
+  #     - 3306:3306
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=835556264Aa!
+  #     - TZ=Asia/Shanghai
+  #   networks:
+  #     - normal
+  #   command: [
+  #     'mysqld',
+  #     '--innodb-buffer-pool-size=80M',
+  #     '--character-set-server=utf8mb4',
+  #     '--collation-server=utf8mb4_unicode_ci',
+  #     '--default-time-zone=+8:00',
+  #     '--lower-case-table-names=1',
+  #     '--default_authentication_plugin=mysql_native_password',
+  #     '--skip-name-resolve',
+  #     '--max_connections=1000'
+  #   ]
+  #   volumes:
+  #     # 挂挂载配置文件
+  #     - ./data/mysql/conf:/etc/mysql/conf.d
+  #     # 挂载日志
+  #     - ./data/mysql/logs:/logs
+  #     # 挂载数据
+  #     - ./data/mysql/data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    restart: always
+    container_name: redis
+    privileged: true
+    ports:
+      - 6379:6379
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - normal
+    volumes:
+      - ./data/redis/data:/data
+      - ./data/redis/conf/redis.conf:/etc/redis/redis.conf
+      - ./data/redis/logs:/logs
+    command: redis-server --port 6379 --requirepass 835556264Aa!  --appendonly yes
+
+  # memcached:
+  #   image: memcached:latest
+  #   restart: always
+  #   container_name: memcached
+  #   privileged: true
+  #   ports:
+  #     - 11211:11211
+  #   environment:
+  #     - TZ=Asia/Shanghai
+  #   networks:
+  #     - normal
+networks:
+  normal:
