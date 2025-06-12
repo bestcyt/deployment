@@ -99,3 +99,4 @@ services:
       - normal
 networks:
   normal:
+    driver: bridge
