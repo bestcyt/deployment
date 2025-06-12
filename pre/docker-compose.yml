@@ -48,10 +48,10 @@ services:
     networks:
       - normal
     environment:
-      - MYSQL_ROOT_PASSWORD=835556264Aa!
-      - MYSQL_DATABASE=zhaojian
-      - MYSQL_USER=zhaojian
-      - MYSQL_PASSWORD=zhaojian!
+      - MYSQL_ROOT_PASSWORD=850160757Aa!
+      - MYSQL_DATABASE=xhs_cj
+      - MYSQL_USER=xhs_cj
+      - MYSQL_PASSWORD=850160757Aa!
     command: [
       'mysqld',
       '--default-authentication-plugin=mysql_native_password',  # 关键配置
