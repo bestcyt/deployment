@@ -60,7 +60,8 @@ services:
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci',
       '--default-time-zone=+8:00',
-      '--max_connections=1000'
+      '--max_connections=1000',
+      '--bind-address=0.0.0.0'
     ] 
     volumes:
       # 挂挂载配置文件
