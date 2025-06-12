@@ -48,6 +48,7 @@ services:
     networks:
       - normal
     environment:
+      - MYSQL_ROOT_HOST: '%'
       - MYSQL_ROOT_PASSWORD=850160757Aa!
       - MYSQL_DATABASE=xhs_cj
       - MYSQL_USER=xhs_cj
